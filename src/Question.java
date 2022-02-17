@@ -3,12 +3,14 @@ public class Question {
     private boolean correctAnswer;
     private boolean userAnswer;
     private int difficulty;
+    private String topic;
 
-    public Question(String statement, boolean correctAnswer, int difficulty) {
+    public Question(String statement, boolean correctAnswer, int difficulty, String topic) {
         this.statement = statement;
         this.correctAnswer = correctAnswer;
         this.userAnswer = false;
         this.difficulty = difficulty;
+        this.topic = topic;
     }
 
     public String getStatement() {
