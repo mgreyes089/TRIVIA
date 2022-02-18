@@ -36,4 +36,8 @@ public class Question {
     public int getDifficulty() {
         return difficulty;
     }
+
+    public String getTopic() {
+        return topic;
+    }
 }
