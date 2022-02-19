@@ -13,13 +13,13 @@ public class Main {
     private static int questionsAnswered = 0;
 
     public static void main(String[] args) {
-        List<Question> allQuestions = createQuestionList();
-        Map<String, List<Question>> questions = createQuestionListByTopic(allQuestions);
+        LinkedList<Question> allQuestions = createQuestionList();
+        Map<String, LinkedList<Question>> questions = createQuestionListByTopic(allQuestions);
 
         while (gameFinished(questions)) {
             String usersChoice = askUserTopic(questions);
             System.out.println("===============");
-            List<Question> topicQuestions = questions.get(usersChoice);
+            LinkedList<Question> topicQuestions = randomizeQuestions(questions.get(usersChoice));
             askQuestion(topicQuestions);
             System.out.println("===============");
             printStatistics();
@@ -33,22 +33,18 @@ public class Main {
         System.out.println("Has obtenido un total de " + userPoints + " puntos.");
     }
 
-    private static boolean gameFinished(Map<String, List<Question>> questions) {
+    private static boolean gameFinished(Map<String, LinkedList<Question>> questions) {
         if (userPoints >= MAX_POINTS || questions.values().stream().distinct().toList().get(0).isEmpty()) {
             return false;
         }
         return true;
     }
 
-    private static String askUserTopic(Map<String, List<Question>> questions) {
+    private static String askUserTopic(Map<String, LinkedList<Question>> questions) {
         Scanner sc = new Scanner(System.in);
         while (true) {
-            System.out.println("Las temáticas disponibles son:");
-            for (String key : questions.keySet()) {
-                if (!questions.get(key).isEmpty()) {
-                    System.out.println(key);
-                }
-            }
+            printAvailableTopics(questions);
+
             System.out.println("Escribe la temática con la que quieres jugar");
             String choosenTopic = sc.nextLine().toLowerCase();
             if (!questions.containsKey(choosenTopic)) {
@@ -58,17 +54,34 @@ public class Main {
         }
     }
 
-    private static void askQuestion(List<Question> questions) {
-        Scanner sc = new Scanner(System.in);
+    private static void printAvailableTopics(Map<String, LinkedList<Question>> questions) {
+        System.out.println("Las temáticas disponibles son:");
+        for (String key : questions.keySet()) {
+            if (!questions.get(key).isEmpty()) {
+                System.out.println(key);
+            }
+        }
+    }
+
+    private static void askQuestion(LinkedList<Question> questions) {
         Question currentQuestion = questions.get(0);
-
         System.out.println(currentQuestion.getStatement());
-        System.out.println("Contesta True/False (T/F)");
-        String text = sc.nextLine();
-
-        boolean userTrueOrFalse = text.equalsIgnoreCase("T");
+        boolean userTrueOrFalse = getUserAnswer();
         currentQuestion.setUserAnswer(userTrueOrFalse);
 
+        isAnswerCorrect(currentQuestion);
+        questionsAnswered++;
+        questions.remove(0);
+    }
+
+    private static boolean getUserAnswer() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Contesta True/False (T/F)");
+        String answer = sc.nextLine();
+        return answer.equalsIgnoreCase("T");
+    }
+
+    private static void isAnswerCorrect(Question currentQuestion) {
         if (currentQuestion.isAnswerCorrect()) {
             System.out.println("Has acertado!!!");
             userPoints += currentQuestion.getDifficulty();
@@ -76,12 +89,10 @@ public class Main {
         } else {
             System.out.println("Nice try, pero no chaval ;-)");
         }
-        questionsAnswered++;
-        questions.remove(0);
     }
 
-    private static Map<String, List<Question>> createQuestionListByTopic(List<Question> allQuestions) {
-        Map<String, List<Question>> questions = new HashMap<>();
+    private static Map<String, LinkedList<Question>> createQuestionListByTopic(LinkedList<Question> allQuestions) {
+        Map<String, LinkedList<Question>> questions = new HashMap<>();
         questions.put(GEOGRAPHY, getAllQuestionsByTopic(allQuestions, GEOGRAPHY));
         questions.put(SPORTS,    getAllQuestionsByTopic(allQuestions, SPORTS));
         questions.put(MOVIES,    getAllQuestionsByTopic(allQuestions, MOVIES));
@@ -89,8 +100,13 @@ public class Main {
         return questions;
     }
 
-    private static List<Question> getAllQuestionsByTopic(List<Question> allQuestions, String topic) {
-        List<Question> questions = new ArrayList<>();
+    private static LinkedList<Question> randomizeQuestions(LinkedList<Question> allQuestionsByTopic) {
+        Collections.shuffle(allQuestionsByTopic);
+        return allQuestionsByTopic;
+    }
+
+    private static LinkedList<Question> getAllQuestionsByTopic(LinkedList<Question> allQuestions, String topic) {
+        LinkedList<Question> questions = new LinkedList<>();
         for(Question currentQuestion : allQuestions){
             if(currentQuestion.getTopic().equalsIgnoreCase(topic)){
                 questions.add(currentQuestion);
@@ -99,8 +115,8 @@ public class Main {
         return questions;
     }
 
-    private static List<Question> createQuestionList() {
-        List<Question> questions = new ArrayList<>();
+    private static LinkedList<Question> createQuestionList() {
+        LinkedList<Question> questions = new LinkedList<>();
 
         questions.add(new Question("La capital de Francia es Paris", true, 3, GEOGRAPHY));
         questions.add(new Question("La capital de Italia es Roma", true, 2, GEOGRAPHY));
