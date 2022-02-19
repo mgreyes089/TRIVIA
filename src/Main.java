@@ -124,9 +124,9 @@ public class Main {
 
     private static void askQuestion(List<Player> players, int currentPlayer, LinkedList<Question> questions) {
         Question currentQuestion = questions.get(0);
-        System.out.println(currentQuestion.getStatement());
-        boolean userTrueOrFalse = getUserAnswer();
-        currentQuestion.setUserAnswer(userTrueOrFalse);
+        printQuestionAndAnswers(currentQuestion);
+        int userAnswer = getUserAnswer();
+        currentQuestion.setUserAnswer(userAnswer);
         Player player = players.get(currentPlayer);
         player.setQuestion(currentQuestion);
 
@@ -134,11 +134,17 @@ public class Main {
         questions.remove(0);
     }
 
-    private static boolean getUserAnswer() {
+    private static void printQuestionAndAnswers(Question currentQuestion) {
+        System.out.println(currentQuestion.getStatement());
+        for (int i = 0; i < currentQuestion.getAnswers().size(); i++) {
+            System.out.println((i+1) + "- " + currentQuestion.getAnswers().get(i));
+        }
+    }
+
+    private static int getUserAnswer() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Contesta True/False (T/F)");
-        String answer = sc.nextLine();
-        return answer.equalsIgnoreCase("T");
+        System.out.println("Escribe el número de la respuesta correcta");
+        return sc.nextInt()-1;
     }
 
     private static void isAnswerCorrect(Player currentPlayer, Question currentQuestion) {
@@ -178,29 +184,29 @@ public class Main {
     private static LinkedList<Question> createQuestionList() {
         LinkedList<Question> questions = new LinkedList<>();
 
-        questions.add(new Question("La capital de Francia es Paris", true, 3, GEOGRAPHY));
-        questions.add(new Question("La capital de Italia es Roma", true, 2, GEOGRAPHY));
-        questions.add(new Question("La capital de Portugal es Lisboa", true, 4, GEOGRAPHY));
-        questions.add(new Question("La capital de Alemania es Londres", false, 5, GEOGRAPHY));
-        questions.add(new Question("La capital de Holanda es Bruselas", false, 5, GEOGRAPHY));
+        questions.add(new Question("¿Cuál es la capital de Francia?",  1, 3, GEOGRAPHY, new ArrayList<>(Arrays.asList("Lyon", "París", "Nantes", "Toulouse"))));
+        questions.add(new Question("¿Cuál es la capital de Italia?",   0, 2, GEOGRAPHY, new ArrayList<>(Arrays.asList("Roma", "Nápoles", "Tavullia", "Milán"))));
+        questions.add(new Question("¿Cuál es la capital de Portugal?", 3, 4, GEOGRAPHY, new ArrayList<>(Arrays.asList("Faro", "Oporto", "Coímbra", "Lisboa"))));
+        questions.add(new Question("¿Cuál es la capital de Alemania?", 1, 5, GEOGRAPHY, new ArrayList<>(Arrays.asList("Düsseldorf", "Berlín", "Stuttgart", "Múnich"))));
+        questions.add(new Question("¿Cuál es la capital de Holanda?",  2, 5, GEOGRAPHY, new ArrayList<>(Arrays.asList("Eindhoven", "Groninga", "Ámsterdam", "Alkmaar"))));
 
-        questions.add(new Question("El Barça viste de azul y rojo", true, 2, SPORTS));
-        questions.add(new Question("El Madrid viste de blanco y rojo", false, 2, SPORTS));
-        questions.add(new Question("El Espanyol viste de rojo y amarillo", false, 2, SPORTS));
-        questions.add(new Question("Tom Brady ha ganado 7 veces la SuperBowl", true, 5, SPORTS));
-        questions.add(new Question("Valentino Rossi lleva el número 46", true, 3, SPORTS));
+        questions.add(new Question("¿Cuáles són los colores del Barça?",      1, 2, SPORTS, new ArrayList<>(Arrays.asList("Amarillo", "Azul y rojo", "Azul y blanco", "Rojo y blanco"))));
+        questions.add(new Question("¿Cual es el color del Madrid?",           2, 2, SPORTS, new ArrayList<>(Arrays.asList("Azul", "Amarillo", "Blanco", "Rojo"))));
+        questions.add(new Question("¿Cuáles són los colores del Espanyol?",   3, 2, SPORTS, new ArrayList<>(Arrays.asList("Blanco y rojo", "Azul", "Blanco", "Blanco y azul"))));
+        questions.add(new Question("¿Cuántas SuperBowl ha ganado Tom Brady?", 3, 5, SPORTS, new ArrayList<>(Arrays.asList("1", "4", "6", "7"))));
+        questions.add(new Question("¿Cual es el número de Valentino Rossi?",  1, 3, SPORTS, new ArrayList<>(Arrays.asList("93", "46", "33", "15"))));
 
-        questions.add(new Question("Titanic va sobre un barco que se hunde", true, 2, MOVIES));
-        questions.add(new Question("La Loca Academia de Policía es de humor", true, 3, MOVIES));
-        questions.add(new Question("El Jóker es el compañero de Batman", false, 3, MOVIES));
-        questions.add(new Question("El trabajo de Spiderman es periodista", true, 4, MOVIES));
-        questions.add(new Question("Shrek es de color granate", false, 2, MOVIES));
+        questions.add(new Question("¿En qué país nació Bud Spencer?",                1, 2, MOVIES, new ArrayList<>(Arrays.asList("Estados Unidos", "Italia", "Gran Bretaña", "Escocia"))));
+        questions.add(new Question("¿De qué género es La Loca Academia de Policía?", 3, 3, MOVIES, new ArrayList<>(Arrays.asList("Documental", "Acción", "Suspense", "Comedia"))));
+        questions.add(new Question("¿Quién es el compañero de Batman?",              1, 3, MOVIES, new ArrayList<>(Arrays.asList("Catwoman", "Robin", "Jóker", "Enigma"))));
+        questions.add(new Question("¿De qué trabaja Spiderman?",                     2, 4, MOVIES, new ArrayList<>(Arrays.asList("Repartidor", "Policía", "Periodista", "Barrendero"))));
+        questions.add(new Question("¿De qué color es Shrek?",                        1, 2, MOVIES, new ArrayList<>(Arrays.asList("Amarillo", "Verde", "Rojo", "Azul"))));
 
-        questions.add(new Question("Steve Carrell es el protagonista de The Office", true, 4, SERIES));
-        questions.add(new Question("The Big Bang Theory va sobre geólogos", false, 3, SERIES));
-        questions.add(new Question("En Dos Hombres y Medio los protagonistas son 3 hombres y uno de ellos es acondroplásico", false, 4, SERIES));
-        questions.add(new Question("Penny de The Big Bang Theory nació en Nebraska", true, 5, SERIES));
-        questions.add(new Question("En Dos Chicas Sin Blanca trabajaban en una cafetería", true, 5, SERIES));
+        questions.add(new Question("¿Quién es el protagonista de The Office?",                   3, 4, SERIES, new ArrayList<>(Arrays.asList("Jenna Fischer", "Rainn Wilson", "John Krasinski", "Steve Carell"))));
+        questions.add(new Question("¿De qué va The Big Bang Theory?",                            1, 3, SERIES, new ArrayList<>(Arrays.asList("Geólogos", "Físicos", "Entomólogos ", "Ictiólogos"))));
+        questions.add(new Question("En Dos Hombres y Medio, ¿quién es el padre de Jake?",        0, 4, SERIES, new ArrayList<>(Arrays.asList("Alan", "Walden", "Charlie", "Herb"))));
+        questions.add(new Question("¿Dónde hació Penny de The Big Bang Theory?",                 2, 5, SERIES, new ArrayList<>(Arrays.asList("Texas", "Kansas", "Omaha", "Hawaii"))));
+        questions.add(new Question("¿Dónde trabajan las protagonistas de Dos Chicas Sin Blanca", 0, 5, SERIES, new ArrayList<>(Arrays.asList("Cafetería", "Discoteca", "Escuela", "Tienda"))));
 
         return questions;
     }
