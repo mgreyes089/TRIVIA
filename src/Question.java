@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Question {
     private String statement;
     private boolean correctAnswer;

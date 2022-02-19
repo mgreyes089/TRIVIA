@@ -2,39 +2,69 @@ import java.util.*;
 
 public class Main {
 
-    private static final int MAX_POINTS = 20;
+    private static final int MAX_POINTS = 5;
     private static final String GEOGRAPHY = "geografia";
     private static final String SPORTS = "deportes";
     private static final String MOVIES = "cine";
     private static final String SERIES = "series";
 
-    private static int userPoints = 0;
-    private static int correctAnswers = 0;
-    private static int questionsAnswered = 0;
-
     public static void main(String[] args) {
         LinkedList<Question> allQuestions = createQuestionList();
         Map<String, LinkedList<Question>> questions = createQuestionListByTopic(allQuestions);
 
-        while (gameFinished(questions)) {
+        Player player1 = new Player(askUserName(1));
+        Player player2 = new Player(askUserName(2));
+        Player currentPlayer = player1;
+
+        while (gameFinished(player1, player2, questions)) {
+            printWhoPlays(currentPlayer);
             String usersChoice = askUserTopic(questions);
             System.out.println("===============");
             LinkedList<Question> topicQuestions = randomizeQuestions(questions.get(usersChoice));
-            askQuestion(topicQuestions);
+            askQuestion(currentPlayer, topicQuestions);
             System.out.println("===============");
-            printStatistics();
-            System.out.println("===============");
+            currentPlayer = changePlayer(currentPlayer, player1, player2);
+        }
+        winnerPlayer(player1, player2);
+        System.out.println("===============");
+        printStatistics(player1);
+        System.out.println("===============");
+        printStatistics(player2);
+    }
+
+    private static void winnerPlayer(Player player1, Player player2) {
+        if(player1.getPoints() >= player2.getPoints()){
+            System.out.println(player1.getName().toUpperCase() + " es el ganador!");
+        }else{
+            System.out.println(player2.getName().toUpperCase() + " es el ganador!");
         }
     }
 
-    private static void printStatistics() {
-        System.out.println("Has acertado un total de " + correctAnswers + " sobre " + questionsAnswered + " preguntas.");
-        System.out.println("Esto equivale a un " + ((correctAnswers * 100)/questionsAnswered) + "% de preguntas correctas.");
-        System.out.println("Has obtenido un total de " + userPoints + " puntos.");
+    private static void printWhoPlays(Player currentPlayer) {
+        System.out.println(currentPlayer.getName() + " es tu turno.");
     }
 
-    private static boolean gameFinished(Map<String, LinkedList<Question>> questions) {
-        if (userPoints >= MAX_POINTS || questions.values().stream().distinct().toList().get(0).isEmpty()) {
+    private static Player changePlayer(Player currentPlayer, Player player1, Player player2) {
+        if(currentPlayer.equals(player1)){
+            return player2;
+        }
+        return player1;
+    }
+
+    private static String askUserName(int playerNum) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Introduce el nombre del jugador " + playerNum);
+        return sc.nextLine();
+    }
+
+    private static void printStatistics(Player currentPlayer) {
+        System.out.println(currentPlayer.getName() + ", has acertado un total de " + currentPlayer.getCorrectAnswers() + " sobre " + currentPlayer.getTotalQuestions() + " preguntas.");
+        System.out.println("Esto equivale a un " + ((currentPlayer.getCorrectAnswers() * 100)/currentPlayer.getTotalQuestions()) + "% de preguntas correctas.");
+        System.out.println("Has obtenido un total de " + currentPlayer.getPoints() + " puntos.");
+    }
+
+    private static boolean gameFinished(Player player1, Player player2, Map<String, LinkedList<Question>> questions) {
+        if ((player1.getPoints() >= MAX_POINTS || player2.getPoints() >= MAX_POINTS) || questions.values().stream().distinct().toList().get(0).isEmpty()) {
             return false;
         }
         return true;
@@ -63,14 +93,14 @@ public class Main {
         }
     }
 
-    private static void askQuestion(LinkedList<Question> questions) {
+    private static void askQuestion(Player currentPlayer, LinkedList<Question> questions) {
         Question currentQuestion = questions.get(0);
         System.out.println(currentQuestion.getStatement());
         boolean userTrueOrFalse = getUserAnswer();
         currentQuestion.setUserAnswer(userTrueOrFalse);
+        currentPlayer.setQuestion(currentQuestion);
 
-        isAnswerCorrect(currentQuestion);
-        questionsAnswered++;
+        isAnswerCorrect(currentPlayer, currentQuestion);
         questions.remove(0);
     }
 
@@ -81,11 +111,11 @@ public class Main {
         return answer.equalsIgnoreCase("T");
     }
 
-    private static void isAnswerCorrect(Question currentQuestion) {
+    private static void isAnswerCorrect(Player currentPlayer, Question currentQuestion) {
         if (currentQuestion.isAnswerCorrect()) {
             System.out.println("Has acertado!!!");
-            userPoints += currentQuestion.getDifficulty();
-            correctAnswers++;
+            currentPlayer.setPoints(currentQuestion.getDifficulty());
+            System.out.println("Has obtenido " + currentQuestion.getDifficulty() + " puntos.");
         } else {
             System.out.println("Nice try, pero no chaval ;-)");
         }
@@ -94,9 +124,9 @@ public class Main {
     private static Map<String, LinkedList<Question>> createQuestionListByTopic(LinkedList<Question> allQuestions) {
         Map<String, LinkedList<Question>> questions = new HashMap<>();
         questions.put(GEOGRAPHY, getAllQuestionsByTopic(allQuestions, GEOGRAPHY));
-        questions.put(SPORTS,    getAllQuestionsByTopic(allQuestions, SPORTS));
-        questions.put(MOVIES,    getAllQuestionsByTopic(allQuestions, MOVIES));
-        questions.put(SERIES,    getAllQuestionsByTopic(allQuestions, SERIES));
+        questions.put(SPORTS   , getAllQuestionsByTopic(allQuestions, SPORTS   ));
+        questions.put(MOVIES   , getAllQuestionsByTopic(allQuestions, MOVIES   ));
+        questions.put(SERIES   , getAllQuestionsByTopic(allQuestions, SERIES   ));
         return questions;
     }
 
