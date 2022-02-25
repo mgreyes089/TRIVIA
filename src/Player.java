@@ -33,17 +33,59 @@ public class Player {
         this.questions.add(question);
     }
 
-    public int getTotalQuestions(){
+    public int getTotalQuestions() {
         return this.questions.size();
     }
 
-    public int getCorrectAnswers(){
+    public int getCorrectAnswers() {
         int correctAnswers = 0;
-        for (Question currentQuestion: questions) {
-            if(currentQuestion.isAnswerCorrect()){
+        for (Question currentQuestion : questions) {
+            if (currentQuestion.isAnswerCorrect()) {
                 correctAnswers++;
             }
         }
         return correctAnswers;
+    }
+
+    public double getPercentCorrectQuestionsByTopic(String topic) {
+        int correctAnswers = getCorrectQuestionsByTopic(topic);
+        int totalQuestions = getTotalQuestionsByTopic(topic);
+        if (totalQuestions == 0) return 0;
+
+        return (correctAnswers * 100) / totalQuestions;
+    }
+
+    public int getCorrectQuestionsByTopic(String topic) {
+        int correctQuestionsByTopic = 0;
+        for (Question currentQuestion : questions) {
+            if (currentQuestion.getTopic().equals(topic)) {
+                if (currentQuestion.isAnswerCorrect()) {
+                    correctQuestionsByTopic++;
+                }
+            }
+        }
+        return correctQuestionsByTopic;
+    }
+
+    public int getTotalQuestionsByTopic(String topic) {
+        int questionsByTopic = 0;
+        for (Question currentQuestion : questions) {
+            if (currentQuestion.getTopic().equals(topic)) {
+                questionsByTopic++;
+            }
+        }
+        return questionsByTopic;
+    }
+
+    public int getPointByTopic(String topic) {
+        int pointsByTopic = 0;
+        for (Question currentQuestion : questions) {
+            if (currentQuestion.getTopic().equals(topic)) {
+                if (currentQuestion.isAnswerCorrect()) {
+                    pointsByTopic += currentQuestion.getDifficulty();
+                }
+            }
+        }
+        return pointsByTopic;
     }
 }

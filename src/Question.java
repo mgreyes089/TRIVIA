@@ -33,7 +33,7 @@ public class Question {
         return userAnswer;
     }
 
-    public boolean isAnswerCorrect(){
+    public boolean isAnswerCorrect() {
         return correctAnswer == userAnswer;
     }
 
