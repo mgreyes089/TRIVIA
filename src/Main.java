@@ -17,7 +17,7 @@ public class Main {
 
         int currentPlayer = 0;
 
-        while (gameFinished(players, questions)) {
+        while (!gameFinished(players, questions)) {
             printWhoPlays(players, currentPlayer);
             String usersChoice = askUserTopic(questions);
             System.out.println("===============");
@@ -90,16 +90,31 @@ public class Main {
         }
     }
 
-    private static boolean gameFinished(List<Player> players, Map<String, LinkedList<Question>> questions) {
+    private static boolean gameFinished(List<Player> players, Map<String, LinkedList<Question>> questionsMap) {
+
+        if (isMapEmpty(questionsMap)){
+            return true;
+        }
+        /*
         if (questions.values().stream().distinct().toList().get(0).isEmpty()) {
             return false;
         }
+        */
+        if (playerHasWon(players)) return true;
+        return false;
+    }
+
+    private static boolean playerHasWon(List<Player> players) {
         for (Player currentPlayer : players) {
             if (currentPlayer.getPoints() >= MAX_POINTS) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
+    }
+
+    private static boolean isMapEmpty(Map<String, LinkedList<Question>> questionsMap) {
+        return questionsMap.values().stream().allMatch(questionList -> questionList.isEmpty());
     }
 
     private static String askUserTopic(Map<String, LinkedList<Question>> questions) {
